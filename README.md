@@ -34,6 +34,7 @@ Test the Django Server natively
 ```bash
 docker ps | grep sample-web
 docker exec -it <container id> bash
+./manage.py migrate
 ./manage.py runserver 0.0.0.0:8000
 ```
 
@@ -43,7 +44,7 @@ You should see the default Django install screen, with "The install worked succe
 
 ## PyCharm Setup under Docker Swarm via SSH and mounted source
 
-### Interpreter 
+### Interpreter
 
 Now to set up an SSH Interpreter using the system distribution.
 
@@ -128,4 +129,30 @@ Ensure the `docker-compose.yml` file has the `volumes` section commented out. Th
 an attempt to show the issue with being unable to stop the Django Server once started.
 
 To start with a clean slate, remove the existing Interpreter, Deployment and SSH Configuration associated with this deployment.
+
+Via local Swarm
+```bash
+docker stack deploy -c docker-compose.yml sample
+```
+
+This time we have no source code in our container (unless we copy it to `docker/sample/src` first, which is what we do
+in our build scripts), so we can't do a native Django Server test until after the interpreter has been set up and the
+initial rsync is done.
+
+Follow the previous [Interpreter](#interpreter) instructions, except map the local project `src` to `/opt/sample` and enable rsync.
+
+Now we can test the server directly in the container.
+
+```bash
+python3 manage.py migrate
+python3 manage.py runserver 0.0.0.0:8000
+```
+
+We've had to switch to specifying `python3` because the default rsync settings do not preserve executable permissions on `manage.py`.
+
+Verify that the website is accessible via http://127.0.0.1:8203.
+
+Alter the previous Django Server to nominate the new Remote Interpreter or delete the previous and set up a new Remote Interpreter.
+
+Again, replication of the issue has come unstuck due to not being able to save the Remote Interpreter to the Django Server configuration.
 
