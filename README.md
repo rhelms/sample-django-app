@@ -156,3 +156,38 @@ Alter the previous Django Server to nominate the new Remote Interpreter or delet
 
 Again, replication of the issue has come unstuck due to not being able to save the Remote Interpreter to the Django Server configuration.
 
+Remove the stack from the swarm 
+```bash
+docker stack rm sample
+```
+
+## Deploy under Docker Compose (no mounted drive)
+
+Before I go much further, I need to point out that using the native Docker Compose support in PyCharm is not appropriate for us
+at the moment. We need to be able to have a persistent container running locally that we control, and we have interactions
+with other containers for other projects running in our local swarms. PyCharm seems to insist on having complete control over
+the containers that it runs as a part of Docker Compose, and this has not been appropriate for us as yet.
+
+Remove all previous Interpreters, Deployments, SSH Connections and Run/Debug Configurations.
+
+You may want to edit the `docker-compose.yml` file to remove the `networks` node.
+
+Because we were running in a swarm and the bridge was assumed to be `192.168.64.1`. Under Docker Compose, the connection will
+be coming from somewhere else, but I haven't been able to work out what IP that is (local, docker0 or something else), so for 
+brevity, you may want to comment out the `RUN echo "sshd: *` lines from the `Dockerfile` and rebuild, if you haven't done so already.
+
+Start the container using `docker compose`
+```bash
+docker compose up -d
+```
+
+As before, set up the Interpreter with rsync.
+
+Once set up, `docker exec it * bash` into the container, and run `python3 manage.py migrate` and `python3 manage.py runserver 0.0.0.0:8200`
+to confirm that the server can be run.
+
+Set up the Django Server.
+
+Unfortunately, it looks like the `Django not importable` error is getting in the way again, and I'm unable to save the 
+appropriate interpreter to the Django Server configuation.
+
