@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  sample-web:
+    build: ./sample
+    image: docker_sample-web:latest
+    hostname: sample-web
+#    volumes:
+#      - ../src/:/opt/sample/
+    ports:
+      - "8203:8000"
+      - target: 22
+        published: 2225
+        mode: host
+        protocol: tcp
+    command: /startup.sh
+
+networks:
+  default:
+    external:
+      name: common
