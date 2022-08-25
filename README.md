@@ -183,7 +183,7 @@ docker compose up -d
 
 As before, set up the Interpreter with rsync.
 
-Once set up, `docker exec it * bash` into the container, and run `python3 manage.py migrate` and `python3 manage.py runserver 0.0.0.0:8200`
+Once set up, `docker exec -it * bash` into the container, and run `python3 manage.py migrate` and `python3 manage.py runserver 0.0.0.0:8200`
 to confirm that the server can be run.
 
 Set up the Django Server.
